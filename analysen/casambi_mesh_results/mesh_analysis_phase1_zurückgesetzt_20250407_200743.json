@@ -1,0 +1,357 @@
+{
+  "7A:27:8E:49:CB:65": {
+    "timestamp": "2025-04-07T20:07:43.887238",
+    "device_address": "7A:27:8E:49:CB:65",
+    "device_name": null,
+    "rssi": -94,
+    "local_name": null,
+    "service_uuids": [],
+    "has_casambi_uuid": false,
+    "manufacturer_data": {
+      "76": "1005431c06a38b"
+    },
+    "device_type": "non_casambi"
+  },
+  "84:71:27:7C:F6:9A": {
+    "timestamp": "2025-04-07T20:07:43.887294",
+    "device_address": "84:71:27:7C:F6:9A",
+    "device_name": "000000000000",
+    "rssi": -89,
+    "local_name": "000000000000",
+    "service_uuids": [],
+    "has_casambi_uuid": false,
+    "manufacturer_data": {
+      "1222": "050001020000"
+    },
+    "device_type": "non_casambi"
+  },
+  "8C:26:AA:C9:CA:E8": {
+    "timestamp": "2025-04-07T20:07:43.887312",
+    "device_address": "8C:26:AA:C9:CA:E8",
+    "device_name": null,
+    "rssi": -63,
+    "local_name": null,
+    "service_uuids": [],
+    "has_casambi_uuid": false,
+    "manufacturer_data": {
+      "76": "10050614d44765"
+    },
+    "device_type": "non_casambi"
+  },
+  "20:41:95:E5:34:90": {
+    "timestamp": "2025-04-07T20:07:43.887319",
+    "device_address": "20:41:95:E5:34:90",
+    "device_name": null,
+    "rssi": -69,
+    "local_name": null,
+    "service_uuids": [],
+    "has_casambi_uuid": false,
+    "manufacturer_data": {
+      "6": "01092022395be64fb95ab57d178188759dabe47bc3ec0aa4174bab"
+    },
+    "device_type": "non_casambi"
+  },
+  "2E:A7:D3:3C:11:02": {
+    "timestamp": "2025-04-07T20:07:43.887324",
+    "device_address": "2E:A7:D3:3C:11:02",
+    "device_name": null,
+    "rssi": -83,
+    "local_name": null,
+    "service_uuids": [],
+    "has_casambi_uuid": false,
+    "manufacturer_data": {
+      "19456": "02152686f39cbada4658854aa62e7e5e8b8d00010000c9"
+    },
+    "device_type": "non_casambi"
+  },
+  "05:A3:9D:10:4B:18": {
+    "timestamp": "2025-04-07T20:07:43.887330",
+    "device_address": "05:A3:9D:10:4B:18",
+    "device_name": null,
+    "rssi": -67,
+    "local_name": null,
+    "service_uuids": [],
+    "has_casambi_uuid": false,
+    "manufacturer_data": {
+      "963": "184b109da3052328f22c2800000000000000004b0000f0"
+    },
+    "device_type": "physical_reset",
+    "casambi_data": {
+      "raw_hex": "184b109da3052328f22c2800000000000000004b0000f0",
+      "length": 23,
+      "unit_address": "184b109da305",
+      "contains_nulls": true,
+      "contains_own_mac": false,
+      "other_mac_addresses": [
+        {
+          "position": 0,
+          "hex": "184b109da305",
+          "formatted": "18:4b:10:9d:a3:05"
+        },
+        {
+          "position": 1,
+          "hex": "4b109da30523",
+          "formatted": "4b:10:9d:a3:05:23"
+        },
+        {
+          "position": 2,
+          "hex": "109da3052328",
+          "formatted": "10:9d:a3:05:23:28"
+        },
+        {
+          "position": 3,
+          "hex": "9da3052328f2",
+          "formatted": "9d:a3:05:23:28:f2"
+        },
+        {
+          "position": 4,
+          "hex": "a3052328f22c",
+          "formatted": "a3:05:23:28:f2:2c"
+        },
+        {
+          "position": 5,
+          "hex": "052328f22c28",
+          "formatted": "05:23:28:f2:2c:28"
+        },
+        {
+          "position": 6,
+          "hex": "2328f22c2800",
+          "formatted": "23:28:f2:2c:28:00"
+        },
+        {
+          "position": 7,
+          "hex": "28f22c280000",
+          "formatted": "28:f2:2c:28:00:00"
+        },
+        {
+          "position": 8,
+          "hex": "f22c28000000",
+          "formatted": "f2:2c:28:00:00:00"
+        },
+        {
+          "position": 9,
+          "hex": "2c2800000000",
+          "formatted": "2c:28:00:00:00:00"
+        },
+        {
+          "position": 10,
+          "hex": "280000000000",
+          "formatted": "28:00:00:00:00:00"
+        },
+        {
+          "position": 14,
+          "hex": "00000000004b",
+          "formatted": "00:00:00:00:00:4b"
+        },
+        {
+          "position": 15,
+          "hex": "000000004b00",
+          "formatted": "00:00:00:00:4b:00"
+        },
+        {
+          "position": 16,
+          "hex": "0000004b0000",
+          "formatted": "00:00:00:4b:00:00"
+        },
+        {
+          "position": 17,
+          "hex": "00004b0000f0",
+          "formatted": "00:00:4b:00:00:f0"
+        }
+      ]
+    }
+  },
+  "FA:B4:6A:83:53:36": {
+    "timestamp": "2025-04-07T20:07:43.887479",
+    "device_address": "FA:B4:6A:83:53:36",
+    "device_name": null,
+    "rssi": -78,
+    "local_name": null,
+    "service_uuids": [],
+    "has_casambi_uuid": false,
+    "manufacturer_data": {},
+    "device_type": "non_casambi"
+  },
+  "28:11:A5:83:6E:D6": {
+    "timestamp": "2025-04-07T20:07:43.887488",
+    "device_address": "28:11:A5:83:6E:D6",
+    "device_name": null,
+    "rssi": -98,
+    "local_name": null,
+    "service_uuids": [
+      "0000febe-0000-1000-8000-00805f9b34fb"
+    ],
+    "has_casambi_uuid": false,
+    "manufacturer_data": {
+      "784": "40100130"
+    },
+    "device_type": "non_casambi"
+  },
+  "E9:7B:57:51:9F:5B": {
+    "timestamp": "2025-04-07T20:07:43.887493",
+    "device_address": "E9:7B:57:51:9F:5B",
+    "device_name": null,
+    "rssi": -68,
+    "local_name": null,
+    "service_uuids": [],
+    "has_casambi_uuid": false,
+    "manufacturer_data": {
+      "76": "12020003"
+    },
+    "device_type": "non_casambi"
+  },
+  "71:2F:F2:38:A9:FC": {
+    "timestamp": "2025-04-07T20:07:43.887497",
+    "device_address": "71:2F:F2:38:A9:FC",
+    "device_name": null,
+    "rssi": -53,
+    "local_name": null,
+    "service_uuids": [],
+    "has_casambi_uuid": false,
+    "manufacturer_data": {
+      "76": "10067f1d55118d68"
+    },
+    "device_type": "non_casambi"
+  },
+  "7E:64:AE:6A:F3:F0": {
+    "timestamp": "2025-04-07T20:07:43.887500",
+    "device_address": "7E:64:AE:6A:F3:F0",
+    "device_name": null,
+    "rssi": -102,
+    "local_name": null,
+    "service_uuids": [],
+    "has_casambi_uuid": false,
+    "manufacturer_data": {
+      "76": "10057b1c66c448"
+    },
+    "device_type": "non_casambi"
+  },
+  "49:DE:5F:15:20:61": {
+    "timestamp": "2025-04-07T20:07:43.887504",
+    "device_address": "49:DE:5F:15:20:61",
+    "device_name": null,
+    "rssi": -92,
+    "local_name": null,
+    "service_uuids": [],
+    "has_casambi_uuid": false,
+    "manufacturer_data": {
+      "76": "10020200"
+    },
+    "device_type": "non_casambi"
+  },
+  "EC:15:EB:38:76:6B": {
+    "timestamp": "2025-04-07T20:07:43.887508",
+    "device_address": "EC:15:EB:38:76:6B",
+    "device_name": null,
+    "rssi": -51,
+    "local_name": null,
+    "service_uuids": [],
+    "has_casambi_uuid": false,
+    "manufacturer_data": {
+      "76": "12020001"
+    },
+    "device_type": "non_casambi"
+  },
+  "5C:02:72:62:B0:C5": {
+    "timestamp": "2025-04-07T20:07:43.887510",
+    "device_address": "5C:02:72:62:B0:C5",
+    "device_name": "000000000000",
+    "rssi": -98,
+    "local_name": "000000000000",
+    "service_uuids": [],
+    "has_casambi_uuid": false,
+    "manufacturer_data": {
+      "1222": "010001020000"
+    },
+    "device_type": "non_casambi"
+  },
+  "4D:C9:6D:0C:5F:97": {
+    "timestamp": "2025-04-07T20:07:43.887513",
+    "device_address": "4D:C9:6D:0C:5F:97",
+    "device_name": null,
+    "rssi": -95,
+    "local_name": null,
+    "service_uuids": [],
+    "has_casambi_uuid": false,
+    "manufacturer_data": {},
+    "device_type": "non_casambi"
+  },
+  "68:95:EA:48:53:E2": {
+    "timestamp": "2025-04-07T20:07:43.887516",
+    "device_address": "68:95:EA:48:53:E2",
+    "device_name": null,
+    "rssi": -67,
+    "local_name": null,
+    "service_uuids": [],
+    "has_casambi_uuid": false,
+    "manufacturer_data": {
+      "76": "090813e7c0a8b21f1b5816080084fd436d96d323"
+    },
+    "device_type": "non_casambi"
+  },
+  "F2:07:52:CE:55:4B": {
+    "timestamp": "2025-04-07T20:07:43.887519",
+    "device_address": "F2:07:52:CE:55:4B",
+    "device_name": null,
+    "rssi": -65,
+    "local_name": null,
+    "service_uuids": [],
+    "has_casambi_uuid": false,
+    "manufacturer_data": {
+      "76": "12029402"
+    },
+    "device_type": "non_casambi"
+  },
+  "C4:82:D1:38:B0:B5": {
+    "timestamp": "2025-04-07T20:07:43.887522",
+    "device_address": "C4:82:D1:38:B0:B5",
+    "device_name": null,
+    "rssi": -93,
+    "local_name": null,
+    "service_uuids": [],
+    "has_casambi_uuid": false,
+    "manufacturer_data": {
+      "76": "12020003"
+    },
+    "device_type": "non_casambi"
+  },
+  "71:69:4C:CE:D0:08": {
+    "timestamp": "2025-04-07T20:07:43.887524",
+    "device_address": "71:69:4C:CE:D0:08",
+    "device_name": null,
+    "rssi": -81,
+    "local_name": null,
+    "service_uuids": [],
+    "has_casambi_uuid": false,
+    "manufacturer_data": {
+      "76": "10063b1d96281478"
+    },
+    "device_type": "non_casambi"
+  },
+  "52:8D:D0:47:00:6F": {
+    "timestamp": "2025-04-07T20:07:43.887543",
+    "device_address": "52:8D:D0:47:00:6F",
+    "device_name": null,
+    "rssi": -51,
+    "local_name": null,
+    "service_uuids": [],
+    "has_casambi_uuid": false,
+    "manufacturer_data": {
+      "76": "16080088624af8c4a110"
+    },
+    "device_type": "non_casambi"
+  },
+  "5B:CF:9F:B8:09:09": {
+    "timestamp": "2025-04-07T20:07:43.887553",
+    "device_address": "5B:CF:9F:B8:09:09",
+    "device_name": null,
+    "rssi": -67,
+    "local_name": null,
+    "service_uuids": [],
+    "has_casambi_uuid": false,
+    "manufacturer_data": {
+      "76": "10070f1f4f5dca9e58"
+    },
+    "device_type": "non_casambi"
+  }
+}

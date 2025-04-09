@@ -36,6 +36,7 @@ class Casambi:
         self._disconnectCallbacks: list[Callable[[], None]] = []
 
         self._logger = logging.getLogger(__name__)
+        # Initialisiere den Operationskontext für die Kommunikation mit dem Netzwerk
         self._opContext = OperationsContext()
         self._ownHttpClient = httpClient is None
         self._httpClient = httpClient
@@ -123,44 +124,79 @@ class Casambi:
                 addr_or_device = ":".join(["".join(p) for p in pairwise(addr)][::2])
             addr = addr_or_device
 
-        self._logger.info(f"Trying to connect to casambi network {addr}...")
+        self._logger.info(f"Verbindungsaufbau zum Casambi-Netzwerk {addr} wird gestartet...")
+        self._logger.debug("--- VERBINDUNGSPROZESS PHASE 1: VORBEREITUNG ---")
+        self._logger.debug(f"Verwendete Adresse: {addr} (UUID: {addr.replace(':', '').lower()})")
 
+        # Erstelle einen HTTP-Client, falls noch keiner existiert
         if not self._httpClient:
+            self._logger.debug("Erstelle HTTP-Client für die Kommunikation mit der Casambi-Cloud")
             self._httpClient = AsyncClient()
 
-        # Retrieve network information
+        # Netzwerkinformationen abrufen
+        self._logger.debug("--- VERBINDUNGSPROZESS PHASE 2: CLOUD-KOMMUNIKATION ---")
         uuid = addr.replace(":", "").lower()
+        self._logger.debug(f"Setze UUID im Cache: {uuid}")
         await self._cache.setUuid(uuid)
+        
+        self._logger.debug("Erstelle Network-Objekt für die Kommunikation mit der Casambi-Cloud")
         self._casaNetwork = Network(uuid, self._httpClient, self._cache)
+        
+        self._logger.debug("Lade Netzwerkdaten aus dem Cache (falls vorhanden)")
         await self._casaNetwork.load()
         try:
+            self._logger.info("Starte Authentifizierung bei der Casambi-Cloud")
+            self._logger.debug(f"Offline-Modus erzwingen: {forceOffline}")
             await self._casaNetwork.logIn(password, forceOffline)
+            self._logger.info("Authentifizierung bei der Casambi-Cloud erfolgreich")
         # TODO: I don't like that this logic is in this class but I couldn't think of a better way.
         except RequestError:
             self._logger.warning(
-                "Network error while logging in. Trying to continue offline.",
+                "Netzwerkfehler bei der Anmeldung bei der Casambi-Cloud. Versuche Offline-Betrieb.",
                 exc_info=True,
             )
             forceOffline = True
+            self._logger.debug("Offline-Modus aktiviert aufgrund von Netzwerkproblemen")
 
+        self._logger.debug("Aktualisiere Netzwerkdaten (Geräte, Gruppen, Szenen)")
         await self._casaNetwork.update(forceOffline)
+        self._logger.debug(f"Netzwerkdaten aktualisiert. Offline-Modus: {forceOffline}")
 
+        self._logger.debug("--- VERBINDUNGSPROZESS PHASE 3: BLUETOOTH-VERBINDUNG ---")
+        self._logger.debug("Erstelle CasambiClient für die Bluetooth-Kommunikation")
         self._casaClient = CasambiClient(
             addr_or_device,
-            self._dataCallback,
-            self._disconnectCallback,
-            self._casaNetwork,
+            self._dataCallback,        # Callback für eingehende Daten
+            self._disconnectCallback,  # Callback für Verbindungsabbrüche
+            self._casaNetwork,         # Netzwerkinformationen für die Authentifizierung
         )
+        self._logger.debug("Starte Bluetooth-Verbindung mit dem Casambi-Gateway")
         await self._connectClient()
+        self._logger.info("Verbindung zum Casambi-Netzwerk erfolgreich hergestellt")
 
     async def _connectClient(self) -> None:
-        """Initiate the bluetooth connection."""
+        """Initiiere die Bluetooth-Verbindung."""
+        self._logger.debug("Starte internen Verbindungsprozess zum Casambi-Gateway")
         self._casaClient = cast(CasambiClient, self._casaClient)
+        
+        # 1. Physische Bluetooth-Verbindung herstellen
+        self._logger.debug("Verbinde über Bluetooth mit dem Gateway-Gerät")
         await self._casaClient.connect()
+        self._logger.debug("Bluetooth-Verbindung hergestellt, starte Schlüsselaustausch")
+        
         try:
+            # 2. Schlüsselaustausch für die verschlüsselte Kommunikation
+            self._logger.debug("Führe Schlüsselaustausch durch (Diffie-Hellman-Verfahren)")
             await self._casaClient.exchangeKey()
+            self._logger.debug("Schlüsselaustausch erfolgreich, starte lokale Authentifizierung")
+            
+            # 3. Authentifizierung mit den von der Cloud erhaltenen Zugangsdaten
+            self._logger.debug("Authentifiziere bei der lokalen Bluetooth-Schnittstelle")
             await self._casaClient.authenticate()
+            self._logger.debug("Lokale Authentifizierung erfolgreich abgeschlossen")
         except ProtocolError as e:
+            self._logger.error(f"Protokollfehler während der Verbindung: {str(e)}")
+            self._logger.debug("Trenne Bluetooth-Verbindung aufgrund des Fehlers")
             await self._casaClient.disconnect()
             raise e
 
@@ -371,7 +407,7 @@ class Casambi:
             raise TypeError(f"Unkown target type {type(target)}")
 
         self._logger.debug(
-            f"Sending operation {opcode.name} with payload {b2a(state)} for {targetCode:x}"
+            f"Sende Operation {opcode.name} mit Nutzlast {b2a(state)} an Ziel 0x{targetCode:x}"
         )
 
         opPkt = self._opContext.prepareOperation(opcode, targetCode, state)
@@ -380,28 +416,36 @@ class Casambi:
             await self._casaClient.send(opPkt)
         except ConnectionStateError as exc:
             if exc.got == ConnectionState.NONE:
-                self._logger.info("Trying to reconnect broken connection once.")
+                self._logger.info("Verbindung unterbrochen, versuche einmal neu zu verbinden...")
+                self._logger.debug("Starte Neuverbindungsprozess zur Wiederherstellung der Kommunikation")
                 await self._connectClient()
+                self._logger.debug("Verbindung wiederhergestellt, sende Paket erneut")
                 await self._casaClient.send(opPkt)
+                self._logger.debug("Paket nach Neuverbindung erfolgreich gesendet")
             else:
+                self._logger.error(f"Verbindungsfehler: Erwarteter Status {exc.expected}, aktueller Status {exc.got}")
                 raise exc
 
     def _dataCallback(
         self, packetType: IncommingPacketType, data: dict[str, Any]
     ) -> None:
-        self._logger.info(f"Incomming data callback of type {packetType}")
+        """Callback für eingehende Daten vom Casambi-Netzwerk."""
+        self._logger.info(f"Eingehende Daten vom Typ {packetType} empfangen")
         if packetType == IncommingPacketType.UnitState:
             self._logger.debug(
-                f"Handling changed state {b2a(data['state'])} for unit {data['id']}"
+                f"Verarbeite Statusänderung für Gerät {data['id']}: Neuer Status {b2a(data['state'])}"
             )
 
             found = False
+            self._logger.debug(f"Suche nach Gerät mit ID {data['id']} im Netzwerk")
             for u in self._casaNetwork.units:  # type: ignore[union-attr]
                 if u.deviceId == data["id"]:
                     found = True
+                    self._logger.debug(f"Gerät {u.name} (ID: {u.deviceId}) gefunden, aktualisiere Status")
                     u.setStateFromBytes(data["state"])
                     u._on = data["on"]
                     u._online = data["online"]
+                    self._logger.debug(f"Neuer Status: Ein={u._on}, Online={u._online}")
 
                     # Notify listeners
                     for h in self._unitChangedCallbacks:
@@ -409,16 +453,16 @@ class Casambi:
                             h(u)
                         except Exception:
                             self._logger.error(
-                                f"Exception occurred in unitChangedCallback {h}.",
+                                f"Fehler im UnitChangedCallback {h} aufgetreten.",
                                 exc_info=True,
                             )
 
             if not found:
                 self._logger.error(
-                    f"Changed state notification for unkown unit {data['id']}"
+                    f"Statusänderung für unbekanntes Gerät mit ID {data['id']} empfangen"
                 )
         else:
-            self._logger.warning(f"Handler for type {packetType} not implemented!")
+            self._logger.warning(f"Handler für Pakettyp {packetType} ist nicht implementiert!")
 
     def registerUnitChangedHandler(self, handler: Callable[[Unit], None]) -> None:
         """Register a new handler for unit state changed.
@@ -430,7 +474,7 @@ class Casambi:
         :param handler: The method to call when a new unit state is received.
         """
         self._unitChangedCallbacks.append(handler)
-        self._logger.debug(f"Registered unit changed handler {handler}")
+        self._logger.debug(f"Handler für Gerätestatusänderungen registriert: {handler}")
 
     def unregisterUnitChangedHandler(self, handler: Callable[[Unit], None]) -> None:
         """Unregister an existing unit state change handler.
@@ -439,7 +483,7 @@ class Casambi:
         :raises ValueError: If the handler isn't registered.
         """
         self._unitChangedCallbacks.remove(handler)
-        self._logger.debug(f"Removed unit changed handler {handler}")
+        self._logger.debug(f"Handler für Gerätestatusänderungen entfernt: {handler}")
 
     def registerDisconnectCallback(self, callback: Callable[[], None]) -> None:
         """Register a disconnect callback.
@@ -450,7 +494,7 @@ class Casambi:
         :params callback: The callback to register.
         """
         self._disconnectCallbacks.append(callback)
-        self._logger.debug(f"Registered disconnect callback {callback}")
+        self._logger.debug(f"Callback für Verbindungsabbrüche registriert: {callback}")
 
     def unregisterDisconnectCallback(self, callback: Callable[[], None]) -> None:
         """Unregister an existing disconnect callback.
@@ -459,7 +503,7 @@ class Casambi:
         :raises ValueError: If the callback isn't registered.
         """
         self._disconnectCallbacks.remove(callback)
-        self._logger.debug(f"Removed disconnect callback {callback}")
+        self._logger.debug(f"Callback für Verbindungsabbrüche entfernt: {callback}")
 
     async def invalidateCache(self, uuid: str) -> None:
         """Invalidates the cache for a network.
@@ -482,7 +526,7 @@ class Casambi:
                     h(u)
                 except Exception:
                     self._logger.error(
-                        f"Exception occurred in unitChangedHandler {h}.",
+                        f"Fehler im UnitChangedHandler {h} bei Verbindungsabbruch.",
                         exc_info=True,
                     )
 
@@ -491,25 +535,36 @@ class Casambi:
                 d()
             except Exception:
                 self._logger.error(
-                    f"Exception occurred in disconnectCallback {d}.",
+                    f"Fehler im DisconnectCallback {d} bei Verbindungsabbruch.",
                     exc_info=True,
                 )
 
     async def disconnect(self) -> None:
-        """Disconnect from the network."""
+        """Trenne die Verbindung zum Netzwerk."""
+        self._logger.info("Starte Verbindungstrennung vom Casambi-Netzwerk")
         if self._casaClient:
+            self._logger.debug("Trenne Bluetooth-Verbindung zum Client")
             try:
+                self._logger.debug("Führe sicheres Trennen der Bluetooth-Verbindung durch")
                 await asyncio.shield(self._casaClient.disconnect())
+                self._logger.debug("Bluetooth-Verbindung erfolgreich getrennt")
             except Exception:
-                self._logger.error("Failed to disconnect from client.", exc_info=True)
+                self._logger.error("Fehler beim Trennen der Bluetooth-Verbindung.", exc_info=True)
         if self._casaNetwork:
+            self._logger.debug("Trenne Verbindung zur Casambi-Cloud")
             try:
                 await asyncio.shield(self._casaNetwork.disconnect())
+                self._logger.debug("Cloud-Verbindung erfolgreich getrennt")
             except Exception:
-                self._logger.error("Failed to disconnect from network.", exc_info=True)
+                self._logger.error("Fehler beim Trennen der Cloud-Verbindung.", exc_info=True)
+            self._logger.debug("Setze Netzwerkobjekt zurück")
             self._casaNetwork = None
         if self._ownHttpClient and self._httpClient is not None:
+            self._logger.debug("Schließe HTTP-Client-Verbindung")
             try:
                 await asyncio.shield(self._httpClient.aclose())
+                self._logger.debug("HTTP-Client erfolgreich geschlossen")
             except Exception:
-                self._logger.error("Failed to close http client.", exc_info=True)
+                self._logger.error("Fehler beim Schließen des HTTP-Clients.", exc_info=True)
+        
+        self._logger.info("Verbindungstrennung vom Casambi-Netzwerk abgeschlossen")
